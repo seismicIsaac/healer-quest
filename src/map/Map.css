@@ -1,0 +1,69 @@
+
+.map-tile-row {
+  display: flex;
+}
+
+.map-tile {
+  width: 32px;
+  height: 32px;
+  position: relative;
+}
+
+
+.map-tile[terrainType="0"] {
+  background-color: grey;
+}
+
+.map-tile[terrainType="1"] {
+  background-color: green;
+}
+
+.map-tile[terrainType="2"] {
+  background-color: burlywood;
+}
+
+.map-tile[terrainType="3"] {
+  background-color: blue;
+}
+
+.map-tile[terrainType="4"] {
+  background-color: yellow;
+}
+
+.tile-border {
+  position: absolute;
+  box-sizing: border-box;
+}
+.tile-border:hover {
+  border: 1px solid white;
+}
+
+
+.tile-border.top,
+.tile-border.bottom {
+  width: 100%;
+  height: 5px;
+}
+
+.tile-border.left,
+.tile-border.right {
+  width: 5px;
+  height: 100%;
+}
+
+.tile-border.top {
+  top: 0;
+  left: 0;
+}
+.tile-border.bottom {
+  top: 100%;
+  transform: translateY(-100%);
+}
+.tile-border.left {
+  left: 0;
+  top: 0;
+}
+.tile-border.right {
+  left: 100%;
+  transform: translateX(-100%);
+}
