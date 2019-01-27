@@ -1,0 +1,41 @@
+@keyframes scale0to100 {
+  0% { transform: scaleX(0)}
+  100% { transform: scaleX(1)}
+}
+
+.fighter-health .progress-bar-percent-complete {
+  transition: transform .5s;
+}
+
+.healer-mana-bar .progress-bar-percent-complete {
+  background-color: blue;
+}
+
+.progress-bar-container {
+  width: 200px;
+}
+
+.progress-bar-text {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.progress-bar-frame {
+  position: relative;
+  border: 2px solid black;
+  width: 100%;
+  height: 25px;
+  box-sizing: border-box;
+}
+
+.progress-bar-percent-complete {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  background-color: gray;
+  transform-origin: left;
+}
