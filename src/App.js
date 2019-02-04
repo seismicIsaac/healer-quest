@@ -6,7 +6,7 @@ import HealerQuestUIModel from './model/healer-quest-ui-model';
 import GameSimulation from './game-logic/game-simulation';
 import Canvas from './canvas';
 import SPELLS from './game-data/spells';
-import { loadAssets, getAllImagesLoaded } from './game-renderer/asset-loader';
+import { loadAssets, getAllImagesLoaded } from './images/asset-loader';
 import { AnimationDevPanel } from './components/animation-viewer/AnimationDevPanel';
 
 class App extends Component {

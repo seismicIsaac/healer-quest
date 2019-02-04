@@ -1,8 +1,15 @@
 
 class InputHandler {
   constructor(doc) {
-    doc.addEventListener('keydown', this.handleKeyDown.bind(this));
-    doc.addEventListener('keyup', this.handleKeyUp.bind(this));
+    this.doc = doc;
+    this.handleKeyDownCallback = this.handleKeyDown.bind(this);
+    this.handleKeyUpCallback = this.handleKeyUp.bind(this);
+    this.initListeners();
+  }
+
+  initListeners() {
+    this.doc.addEventListener('keydown', this.handleKeyDownCallback);
+    this.doc.addEventListener('keyup', this.handleKeyUpCallback);
     this.keys = {
       up: false,
       left: false,
@@ -49,6 +56,11 @@ class InputHandler {
 
   getKeys() {
     return this.keys;
+  }
+
+  cleanup() {
+    this.doc.removeEventListener('keydown', this.handleKeyDownCallback);
+    this.doc.removeEventListener('keyup', this.handleKeyUpCallback);
   }
 }
 

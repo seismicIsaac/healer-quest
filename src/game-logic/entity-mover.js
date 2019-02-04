@@ -1,11 +1,13 @@
 import CollisionCalculator from "./collision-calculator";
+import { updateActorStat, STAT_NAME_HEALTH } from "./common";
+import { ACTOR_NAME_HEALER } from "../game-data/actors";
 
 class EntityMover {
-  constructor(canvasElement, inputHandler, onProjectileCollision) {
+  constructor(canvasElement, inputHandler, healerQuestModel) {
     this.canvasElement = canvasElement;
     this.inputHandler = inputHandler;
+    this.healerQuestModel = healerQuestModel;
     this.collisionCalculator = new CollisionCalculator();
-    this.onProjectileCollision = onProjectileCollision;
   }
 
   isMovingThisFrame() {
@@ -68,7 +70,7 @@ class EntityMover {
       if (collidedWithHealer) {
         projectilesToDestroy.push(projectile);
         //TODO: call method to damage healer
-        this.onProjectileCollision(projectile);
+        updateActorStat(this.healerQuestModel, ACTOR_NAME_HEALER, STAT_NAME_HEALTH, -projectile.damageOnHit);
       }
     });
     gameState.projectiles = gameState.projectiles.filter(projectile => !projectilesToDestroy.includes(projectile));

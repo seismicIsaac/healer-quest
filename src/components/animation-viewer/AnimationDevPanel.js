@@ -5,8 +5,8 @@ import spider from './monster_bael_fangs.png';
 const WALKING_ANIM = {
   name: 'walking',
   animationState: 0,
-  animationKeyFrames: 2,
-  animationStateXOffset: 1,
+  animationKeyFrames: 3,
+  animationStateXOffset: 0,
   animationStateYOffset: 0,
   frameDuration: 120
 }
@@ -134,7 +134,9 @@ export class AnimationDevPanel extends Component {
   }
 
   getOptionsForAnimationDropdown() {
-    return Object.keys(ANIMATIONS).map(animKey => <option value={animKey}>{animKey}</option>);
+    return Object.keys(ANIMATIONS).map((animKey, index) => {
+      return <option key={index} value={animKey}>{animKey}</option>;
+    });
   }
 
   getSpriteStyle() {

@@ -21,14 +21,6 @@ export function getAnimationByName(animationName) {
   return undefined;
 };
 
-// export function SpiderAttackSequence1(onAnimationFinished) {
-//   return {
-//     states: [
-//       state: 
-//     ]
-//   }
-// }
-
 export function FighterAttackSequence(onAnimationFinished) {
   return {
     states: [

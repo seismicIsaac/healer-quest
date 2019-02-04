@@ -1,4 +1,4 @@
-import { getLoadedAsset } from "./asset-loader";
+import { getLoadedAsset } from "../images/asset-loader";
 
 const ACTOR_RENDERING_DATA = {
   healer: { fillStyle: 'rgb(10, 50, 150)', radius: 8 },
@@ -17,7 +17,7 @@ class GameRenderer {
       return;
     }
     state.actors.forEach((actor) => {
-      if (actor.animation) {
+      if (actor.sprite) {
         this.drawActor(actor);
       } else {
         const actorRenderData = ACTOR_RENDERING_DATA[actor.name];
@@ -33,7 +33,7 @@ class GameRenderer {
   drawActor(actor) {
     const x = actor.x;
     const y = actor.y;
-    const { spriteWidth, spriteHeight, sourceX, sourceY, spriteSource} = actor.animation;
+    const { spriteWidth, spriteHeight, sourceX, sourceY, spriteSource} = actor.sprite.getDrawParameters();
     this.canvas.drawPortionOfImage(
       x, y, spriteWidth, spriteHeight, sourceX, sourceY, getLoadedAsset(spriteSource));
   }
