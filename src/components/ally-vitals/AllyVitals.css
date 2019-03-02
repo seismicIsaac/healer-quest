@@ -1,0 +1,17 @@
+
+.ally-vitals-container {
+  width: 90px;
+  height: 140px;
+  margin-left: 4px;
+  margin-right: 4px;
+}
+
+.ally-portrait-container {
+  width: 90px;
+  height: 90px;
+}
+
+.ally-portrait-image {
+  width: 100%;
+  height: 100%;
+}

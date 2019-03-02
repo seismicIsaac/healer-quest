@@ -10,15 +10,16 @@ export function Sprite(image, width, height, commonProperties, animationsByName,
 }
 
 Sprite.prototype.setCurrentAnimation = function(animationName) {
-  this.currentAnim = Object.assign({frameCounter: 0}, this.commonProperties, this.animationsByName[animationName]);
+  this.currentAnim = Object.assign({name: animationName, frameCounter: 0}, this.commonProperties, this.animationsByName[animationName]);
 }
 
-Sprite.prototype.getDrawParameters = function() {
+Sprite.prototype.getDrawParameters = function(facingDirection) {
+  const facingDirectionOffset = facingDirection === 'left' ? 5 : 0;
   return {
     spriteWidth: this.width,
     spriteHeight: this.height,
     sourceX: this.currentAnim.sourceXOffset * this.width,
-    sourceY: this.currentAnim.sourceYOffset * this.height,
+    sourceY: (this.currentAnim.sourceYOffset + facingDirectionOffset) * this.height,
     spriteSource: this.image
   }
 }

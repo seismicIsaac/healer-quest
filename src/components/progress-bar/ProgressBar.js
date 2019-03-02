@@ -52,6 +52,17 @@ export class ManaBar extends Component {
 const MILLISECONDS_IN_A_SECOND = 1000;
 
 export class CastBar extends Component {
+  getCastBarStyle() {
+    const healerX = this.props.healerX;
+    const healerY = this.props.healerY;
+    return {
+      width: '90px',
+      position: 'absolute',
+      top: `${healerY + 30}px`,
+      left: `${healerX - 24}px`
+    };
+  }
+
   getCastBarPercentCompleteAnimation() {
     if (!this.props.spellBeingCast) {
       return {
@@ -65,6 +76,7 @@ export class CastBar extends Component {
     }
   }
 
+
   render() {
     let spellName = 'No Spell Being Cast';
     if (this.props.spellBeingCast) {
@@ -73,6 +85,7 @@ export class CastBar extends Component {
     const castBarContainerClassname = this.props.spellBeingCast !== null ? '' : 'hidden';
     return (
       <ProgressBar 
+        absoluteTranslation={this.getCastBarStyle()}
         additionalClassName={castBarContainerClassname}
         progressStyle={this.getCastBarPercentCompleteAnimation()}
         progressBarMessage={spellName}
@@ -84,7 +97,7 @@ export class CastBar extends Component {
 function ProgressBar(props) {
   const className = 'progress-bar-container ' + props.additionalClassName;
   return (
-  <div className={className}>
+  <div className={className} style={props.absoluteTranslation}>
     <div className="progress-bar-frame">
       <div className="progress-bar-percent-complete" style={props.progressStyle}></div>
       <div className="progress-bar-text">{props.progressBarMessage}</div>

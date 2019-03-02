@@ -1,13 +1,15 @@
 import React, { Component } from 'react';
-import {HealthBar, ManaBar, CastBar} from './components/progress-bar/ProgressBar';
 import './App.css';
-
+import {HealthBar, CastBar} from './components/progress-bar/ProgressBar';
 import HealerQuestUIModel from './model/healer-quest-ui-model';
 import GameSimulation from './game-logic/game-simulation';
 import Canvas from './canvas';
 import SPELLS from './game-data/spells';
 import { loadAssets, getAllImagesLoaded } from './images/asset-loader';
 import { AnimationDevPanel } from './components/animation-viewer/AnimationDevPanel';
+import { ACTOR_NAME_MONSTER, ACTOR_NAME_HEALER } from './game-data/actors';
+import { AllyVitals } from './components/ally-vitals/AllyVitals';
+import { STAT_NAME_HEALTH, STAT_VALUE_MAXIMUM_KEY, STAT_NAME_MANA } from './game-logic/common';
 
 class App extends Component {
   constructor(props) {
@@ -22,7 +24,7 @@ class App extends Component {
     const healerHealthMax = this.healerQuestModel.get('healerHealthMax');
     const healerMana = this.healerQuestModel.get('healerMana');
     const healerManaMax = this.healerQuestModel.get('healerManaMax');
-    this.state = { 
+    this.state = {
       monsterHealth: monsterHealth,
       monsterHealthMax: monsterHealthMax,
       fighterHealth: fighterHealth,
@@ -61,7 +63,14 @@ class App extends Component {
   }
 
   setSpellBeingCastState() {
-    this.setState({spellBeingCast: this.healerQuestModel.get('spellBeingCast')});
+    const healer = this.healerQuestModel.getGameState().actors.find(actor => actor.name === ACTOR_NAME_HEALER);
+    const healerX = healer.x;
+    const healerY = healer.y;
+    this.setState({
+      healerX: healerX,
+      healerY: healerY,
+      spellBeingCast: this.healerQuestModel.get('spellBeingCast')
+    });
   }
 
   setGameResultState() {
@@ -94,12 +103,39 @@ class App extends Component {
     this.gameSimulation.resetGame();
   }
 
+  handlePauseGameSimClicked() {
+    this.gameSimulation.pauseGame();
+  }
+
+  handleTickClicked() {
+    this.gameSimulation.tick();
+  }
+
   handleMediumHealClicked() {
     this.gameSimulation.startHealSpell('mediumHeal');
   }
 
   handleCancelSpellCastClicked() {
     this.gameSimulation.cancelActiveSpellCast();
+  }
+
+  getAllyVitals() {
+    const actors = this.healerQuestModel.getGameState().actors.filter(actor => actor.name !== ACTOR_NAME_MONSTER);
+    return actors.map((actor) => {
+      const healthKey = actor.name + STAT_NAME_HEALTH;
+      const healthMax = actor.name + STAT_NAME_HEALTH + STAT_VALUE_MAXIMUM_KEY;
+      const manaKey = actor.name + STAT_NAME_MANA;
+      const manaMax = actor.name + STAT_NAME_MANA + STAT_VALUE_MAXIMUM_KEY;
+      return (
+        <AllyVitals 
+          currentHealth={this.state[healthKey]}
+          totalHealth={this.state[healthMax]}
+          currentMana={this.state[manaKey]}
+          totalMana={this.state[manaMax]}
+          actorName={actor.name}
+        />
+      )
+    })
   }
 
   render() {
@@ -110,40 +146,35 @@ class App extends Component {
     const gameOverText = gameResult === 'YOU-WIN' ? 'You Win!' : 'Game Over';
     return (
       <div className="App">
-        <div className="healer-quest-header">Healer Quest</div>
-        <button className="reset-button" onClick={this.handleResetClicked.bind(this)}>Reset</button>
+        <div className="debug-buttons">
+          <button className="reset-button" onClick={this.handleResetClicked.bind(this)}>Reset</button>
+          <button className="pause-game-simulation" onClick={this.handlePauseGameSimClicked.bind(this)}>Pause</button>
+          <button className="tick" onClick={this.handleTickClicked.bind(this)}>Tick</button>
+        </div>
         <button className="medium-heal-button" disabled={mediumHealDisabled} onClick={this.handleMediumHealClicked.bind(this)}>Medium Heal</button>
         <button className="cancel-spell-cast-button" disabled={!this.state.spellBeingCast} onClick={this.handleCancelSpellCastClicked.bind(this)}>Cancel Spell</button>
         <div className="canvas-container">
           <div className={gameOverClass}>{gameOverText}</div>
           <canvas id="game-canvas" width="400" height="400"></canvas>
         </div>
-        <div className="health-indicators">
-          <HealthBar 
-            currentHealth={this.state.fighterHealth}
-            totalHealth={this.state.fighterHealthMax}
-          />
-          <div className="healer-stats">
+        <div className="party-members-container">
+          {this.getAllyVitals()}
+          <div className="monster-health-indicator">
             <HealthBar
-              currentHealth={this.state.healerHealth}
-              totalHealth={this.state.healerHealthMax}
+              currentHealth={this.state.monsterHealth}
+              totalHealth={this.state.monsterHealthMax}
             />
-            <CastBar
-              spellBeingCast={this.state.spellBeingCast}
-            />
-            <ManaBar
-              currentMana={this.state.healerMana}
-              totalMana={this.state.healerManaMax}
-            />
+            <AnimationDevPanel />
           </div>
         </div>
-        <div className="monster-health-indicator">
-          <HealthBar
-            currentHealth={this.state.monsterHealth}
-            totalHealth={this.state.monsterHealthMax}
+        <div className="cast-bar-container">
+          <CastBar
+            healerX={this.state.healerX}
+            healerY={this.state.healerY}
+            spellBeingCast={this.state.spellBeingCast}
           />
         </div>
-        <AnimationDevPanel />
+        
       </div>
     );
   }

@@ -1,7 +1,3 @@
-.App {
-  text-align: center;
-}
-
 .App-logo {
   animation: App-logo-spin infinite 20s linear;
   height: 40vmin;
@@ -12,8 +8,6 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
 }
@@ -50,9 +44,8 @@
   color: red;
 }
 
-.health-indicators {
+.party-members-container {
   display: flex;
-  justify-content: center;
 }
 
 #game-canvas {
@@ -61,4 +54,8 @@
 
 .hidden {
   opacity: 0;
+}
+
+.monster-health-indicator {
+  width: 200px;
 }

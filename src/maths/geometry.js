@@ -3,6 +3,9 @@ export function getUnitVector(x1, y1, x2, y2) {
   const yDistance = y1 - y2;
   const xDistance = x1 - x2;
   const hypotenuse = Math.sqrt(yDistance * yDistance + xDistance * xDistance);
+  if (hypotenuse === 0) {
+    return {x: 0, y: 0};
+  }
   return {
     x: xDistance / hypotenuse,
     y: yDistance / hypotenuse

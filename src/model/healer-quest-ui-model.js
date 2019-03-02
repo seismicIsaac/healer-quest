@@ -1,4 +1,5 @@
 import Signal from '../event/signal';
+import { INITIAL_STATE } from '../game-logic/game-rules';
 
 const DEFAULT_FIGHTER_HEALTH = 900;
 const DEFAULT_MONSTER_HEALTH = 1500;
@@ -23,7 +24,17 @@ function HealerQuestUIModel() {
     isRegeneratingMana: false
   }
 
+  var gameState = INITIAL_STATE;
+  var actorsByName = {
+    'healer': INITIAL_STATE.actors[2],
+    'fighter': INITIAL_STATE.actors[1],
+    'monster': INITIAL_STATE.actors[0]
+  }
+
   return {
+    getActorByName: function(actorName) {
+      return actorsByName[actorName];
+    },
     get: function(propertyName) {
       if (propertyName.endsWith('Changed') && !properties[propertyName]) {
         properties[propertyName] = new Signal();
@@ -54,6 +65,12 @@ function HealerQuestUIModel() {
         console.error(`ERROR: Property ${propertyName} already exists on` +
           ` HealerQuestModel with value: ${properties[propertyName]}`);
       }
+    },
+    getGameState: function() {
+      return gameState;
+    },
+    setGameState: function(newGameState) {
+      gameState = newGameState;
     }
   }
 }

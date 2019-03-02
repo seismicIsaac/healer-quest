@@ -9,11 +9,9 @@ import { STAT_NAME_HEALTH, STAT_NAME_MANA, STAT_VALUE_MAXIMUM_KEY, updateActorSt
 import { ProjectileSpawner } from './projectile-spawner';
 import { AIActionHandler } from './action';
 
-const TIMER_TICK_BASIC_ATTACK = 1250;
 const TIME_BEFORE_MANA_REGENS = 6000;
 const MANA_REGEN_TICK_TIME = 3000;
 
-const ACTOR_NAME_MONSTER = 'monster';
 const ACTOR_NAME_FIGHTER = 'fighter';
 const ACTOR_NAME_HEALER = 'healer';
 
@@ -23,22 +21,25 @@ class GameSimulation {
 constructor(healerQuestModel, canvas) {
     this.gameRenderer = new GameRenderer(canvas);
     this.healerQuestModel = healerQuestModel;
-    this.gameState = INITIAL_STATE;
     this.inputHandler = new InputHandler(document);
     this.entityMover = new EntityMover(canvas.getCanvasElement(), this.inputHandler, healerQuestModel);
     this.animationController = new AnimationController();
-    this.projectileSpawner = new ProjectileSpawner(this.gameState);
+    this.projectileSpawner = new ProjectileSpawner(this.healerQuestModel.getGameState());
     this.cpuActionHandler = new AIActionHandler(healerQuestModel, this.projectileSpawner);
     this.canvas = canvas;
   }
 
   setupActorAnimations() {
-    this.gameState.actors.forEach(this.animationController.setInitialAnimations);
+    this.healerQuestModel.getGameState().actors.forEach(this.animationController.setInitialAnimations);
+  }
+
+  pauseGame() {
+    this.cleanupTimers();
   }
 
   tick() {
     this.runGameLoopLogic();
-    this.gameRenderer.renderCurrentState(this.gameState);
+    this.gameRenderer.renderCurrentState(this.healerQuestModel.getGameState());
   }
 
   runGameLoopLogic() {
@@ -48,24 +49,34 @@ constructor(healerQuestModel, canvas) {
       this.cleanupGame();
       return;
     }
-    const healer = this.gameState.actors[2];
+    const healer = this.healerQuestModel.getGameState().actors[2];
     this.entityMover.updatePlayerPosition(healer);
     const isMoving = this.entityMover.isMovingThisFrame(healer);
-    this.gameState.actors.forEach((actor) => {
-      if (actor.name === 'healer') {
-        this.animationController.update4DirectionalMovingAnimation(actor.sprite.currentAnim, actor.facingDirection, isMoving);
-      } else {
+    if (isMoving) {
+      this.cancelActiveSpellCast();
+    }
+    this.animationController.update4DirectionalMovingAnimation(healer.sprite.currentAnim, healer.facingDirection, isMoving);
+    this.entityMover.updateProjectilePositions(this.healerQuestModel.getGameState());
+    
+    const aiActors = this.healerQuestModel.getGameState().actors.filter(actor => actor.name !== 'healer');
+    const allActors = this.healerQuestModel.getGameState().actors;
+    this.cpuActionHandler.updateAIActions(aiActors, allActors);
+    aiActors.forEach((actor) => {
+      if (actor.movementTarget) {
+        this.cpuActionHandler.handleAIMovement(actor);
+        this.animationController.updateCPUMovementAnimation(actor);
+      } else if (actor.sprite.animSequence) {
         this.animationController.updateBattleAnimation(actor.sprite);
+      } else {
+        this.animationController.updateBattlerIdleAnimation(actor.sprite);
       }
     });
-    this.entityMover.updateProjectilePositions(this.gameState);
-    this.cpuActionHandler.updateAIActions(this.gameState.actors);
   }
 
   startGame() {
     this.inputHandler.initListeners();
     this.setupActorAnimations();
-    this.gameRenderer.renderCurrentState(this.gameState);
+    this.gameRenderer.renderCurrentState(this.healerQuestModel.getGameState());
     this.gameClock = getGameClock(HEALER_QUEST_GAME_CLOCK_TICK_SPEED_MILLIS, this.tick.bind(this));
     this.gameClock.start();
   }

@@ -12,7 +12,7 @@
 }
 
 .progress-bar-container {
-  width: 200px;
+  width: 100%;
 }
 
 .progress-bar-text {
@@ -20,6 +20,7 @@
   left: 50%;
   transform: translateX(-50%);
   font-weight: bold;
+  font-size: 10px;
   white-space: nowrap;
 }
 
@@ -27,7 +28,7 @@
   position: relative;
   border: 2px solid black;
   width: 100%;
-  height: 25px;
+  height: 18px;
   box-sizing: border-box;
 }
 

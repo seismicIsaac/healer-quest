@@ -33,7 +33,8 @@ class GameRenderer {
   drawActor(actor) {
     const x = actor.x;
     const y = actor.y;
-    const { spriteWidth, spriteHeight, sourceX, sourceY, spriteSource} = actor.sprite.getDrawParameters();
+    const facingDirection = actor.name === 'healer' ? '' : actor.facingDirection;
+    const { spriteWidth, spriteHeight, sourceX, sourceY, spriteSource} = actor.sprite.getDrawParameters(facingDirection);
     this.canvas.drawPortionOfImage(
       x, y, spriteWidth, spriteHeight, sourceX, sourceY, getLoadedAsset(spriteSource));
   }

@@ -12,3 +12,7 @@ export function updateActorStat(healerQuestModel, actorName, statName, delta) {
     healerQuestModel.set(statKey, Math.min(currentStatValue + delta, maxStatValue));
   }
 }
+
+export function getActorByName(actorName) {
+  
+}

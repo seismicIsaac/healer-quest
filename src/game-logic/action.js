@@ -1,5 +1,6 @@
 import { updateActorStat, STAT_NAME_HEALTH } from "./common";
 import { ACTOR_TYPE_AI } from "../game-data/actors";
+import { getUnitVector, calculateDistance } from "../maths/geometry";
 
 export function AIAction(actor, target, type) {
   this.actor = actor;
@@ -22,26 +23,24 @@ export class AIActionHandler {
     this.projectileSpawner = projectileSpawner;
   }
 
-  updateAIActions(actors) {
-    this.startNextAIAction(actors);
+  updateAIActions(actors, allActors) {
+    this.startNextAIAction(actors, allActors);
     this.updateActionCooldowns(actors);
   }
 
-  startNextAIAction(actors) {
+  startNextAIAction(actors, allActors) {
     actors.forEach((actor) => {
-      if (actor.currentAction || actor.name === 'healer') {
+      //Override movement actions, but not other actions.
+      actor.movementTarget = null;
+      if (actor.currentAction && actor.currentAction !== 'move-to-target') {
         return;
       } else {
-        const { targetName, type, name, damage } = actor.actionPicker();
-        actor.globalCooldownCounter++;
-        if (type === 'idle' || actor.globalCooldownCounter < actor.globalCooldownFrames) {
-          return;
-        }
-        const target = actors.find((actor) => actor.name === targetName);
+        const { targetName, type, name, damage } = actor.actionPicker(this.healerQuestModel);
+        const target = allActors.find((actor) => actor.name === targetName);
+        actor.globalCooldownCounter = Math.min(actor.globalCooldownCounter + 1, actor.globalCooldownFrames);
+
         const action = this.actionFactory.getAction(actor, target, type, name, damage);
         action.invoke();
-        actor.actionsByName[name].cooldownCounter = 0;
-        actor.globalCooldownCounter = 0;
         actor.currentAction = name;
       }
     });
@@ -58,12 +57,27 @@ export class AIActionHandler {
       });
     });
   }
-
+  
+  handleAIMovement(actor) {
+    const target = actor.movementTarget;
+    const direction = getUnitVector(actor.x, actor.y, target.x, target.y);
+    if (direction.x < 0) {
+      actor.facingDirection = 'right';
+    } else if (direction.x > 0) {
+      actor.facingDirection = 'left';
+    } else if (target) {
+      actor.facingDirection = target.actualX < actor.x ? 'left' : 'right';
+    }
+    actor.x -= Math.round(direction.x * actor.speed);
+    actor.y -= Math.round(direction.y * actor.speed);
+  }
 }
 
-export function BasicAttackAction(actor, target, damage, healerQuestModel) {
+function BasicAttackAction(actor, target, name, damage, healerQuestModel) {
   return {
     invoke: function() {
+      actor.actionsByName[name].cooldownCounter = 0;
+      actor.globalCooldownCounter = 0;
       actor.sprite.setActionAnimationSequence('basic-attack', null, () => {
         updateActorStat(healerQuestModel, target.name, STAT_NAME_HEALTH, -damage);
         actor.currentAction = '';
@@ -72,14 +86,58 @@ export function BasicAttackAction(actor, target, damage, healerQuestModel) {
   }
 }
 
-export function BasicSpawnProjectileAction(actor, target, name, damage, projectileSpawner) {
+function BasicSpawnProjectileAction(actor, target, name, damage, projectileSpawner) {
   return {
     invoke: function() {
+      actor.actionsByName[name].cooldownCounter = 0;
+      actor.globalCooldownCounter = 0;
       actor.sprite.setActionAnimationSequence('basic-shot', null, () => {
         projectileSpawner.spawnProjectile(actor, target, name, damage);
         actor.currentAction = '';
       });
     }
+  }
+}
+
+function BasicMovementCommand(actor, target) {
+  return {
+    invoke: function() {
+      actor.movementTarget = getMovementTarget(actor, target);
+      if (actor.sprite.currentAnim && actor.sprite.currentAnim.name !== 'walk') {
+        actor.sprite.setCurrentAnimation('walk');
+      }
+    }
+  }
+}
+
+function BasicIdleCommand(actor) {
+  return {
+    invoke: function() {
+      actor.sprite.setCurrentAnimation('idle');
+    }
+  }
+}
+
+export function getMovementTarget(actor, target) {
+  const leftSideX = target.x - actor.width;
+  const y = Math.round(target.y + (target.height - actor.height) / 2);
+  const rightSideX = target.x + target.width;
+  let targetX;
+
+  if (calculateDistance(actor.x, actor.y, leftSideX, y) > calculateDistance(actor.x, actor.y, rightSideX, y)) {
+    targetX = rightSideX;
+  } else {
+    targetX = leftSideX;
+  }
+
+  return {
+    targetName: target.name,
+    x: targetX,
+    y: y,
+    hitboxWidth: target.hitboxWidth,
+    hitboxHeight: target.hitboxHeight,
+    actualX: target.x,
+    actualY: target.y
   }
 }
 
@@ -91,9 +149,13 @@ class ActionFactory {
 
   getAction(actor, target, actionType, actionName, damage) {
    if (actionType === 'basic-attack') {
-     return BasicAttackAction(actor, target, damage, this.healerQuestModel);
+     return BasicAttackAction(actor, target, actionName, damage, this.healerQuestModel);
    } else if (actionType === 'basic-projectile') {
      return BasicSpawnProjectileAction(actor, target, actionName, damage, this.projectileSpawner);
+   } else if (actionType === 'movement') {
+     return BasicMovementCommand(actor, target);
+   } else if (actionType === 'idle') {
+     return BasicIdleCommand(actor);
    }
   }
 }

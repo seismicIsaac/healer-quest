@@ -26,10 +26,6 @@ export class AnimationController {
 
   updateBattleAnimation(sprite) {
     const currentAnim = sprite.currentAnim;
-    if (!sprite.animSequence) {
-      this.updateBattlerIdleAnimation(currentAnim);
-      return;
-    }
     sprite.incrementFrameCounter();
     if (sprite.isActionFrame()) {
       sprite.completeSequenceAction();
@@ -56,7 +52,18 @@ export class AnimationController {
     currentAnim.sourceXOffset = Math.floor(currentAnim.frameCounter / currentAnim.frameRate);
   }
 
-  updateBattlerIdleAnimation(currentAnim) {
+  updateCPUMovementAnimation(actor) {
+    const walk = actor.sprite.currentAnim;
+    walk.frameCounter++;
+    const isCurrentLoopFinished = walk.frameCounter >= walk.keyFrames * walk.frameRate;
+    if (isCurrentLoopFinished) {
+      walk.frameCounter = 0;
+    }
+    walk.sourceXOffset = Math.floor(walk.frameCounter / walk.frameRate);
+  }
+
+  updateBattlerIdleAnimation(sprite) {
+    const currentAnim = sprite.currentAnim;
     currentAnim.frameCounter++;
     const isCurrentLoopFinished = currentAnim.frameCounter >= currentAnim.keyFrames * currentAnim.frameRate;
     if (isCurrentLoopFinished) {

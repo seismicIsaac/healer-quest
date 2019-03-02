@@ -79,6 +79,11 @@ export function createSpiderSprite() {
       sourceYOffset: 3,
       keyFrames: 4,
       frameRate: 6
+    },
+    'walk': {
+      sourceYOffset: 4,
+      keyFrames: 3,
+      frameRate: 8
     }
   }
   const animationSequencesByName = {
