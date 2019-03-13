@@ -34,7 +34,12 @@ export function createMonkSprite() {
     },
     'attacking': {
       sourceYOffset: 2,
-      frameRate: 4
+      frameRate: 4,
+      damageZoneX: 0,
+      damageZoneY: 20,
+      damageZoneWidth: 40,
+      damageZoneHeight: 25,
+      damageZoneDurationFrames: 3
     }
   }
   const animationSequencesByName = {
@@ -45,7 +50,9 @@ export function createMonkSprite() {
       ]
     }
   }
-  return new Sprite('monk-m-battler', 64, 64, commonProperties, animationsByName, animationSequencesByName, 'idle');
+  var sprite = new Sprite('monk-m-battler', 64, 64, commonProperties, animationsByName, animationSequencesByName, 'idle');
+  sprite.facingLeftOffset = 2;
+  return sprite;
 }
 
 export function createSpiderSprite() {
@@ -68,7 +75,11 @@ export function createSpiderSprite() {
     'attacking': {
       sourceYOffset: 2,
       keyFrames: 5,
-      frameRate: 8
+      frameRate: 8,
+      damageZoneX: 20,
+      damageZoneY: 20,
+      damageZoneWidth: 40,
+      damageZoneHeight: 60
     },
     'shoot': {
       sourceYOffset: 1,
@@ -112,5 +123,6 @@ export function createSpiderSprite() {
   const sprite = new Sprite('spider', 96, 70, commonProperties, animationsByName, animationSequencesByName, 'idle');
   sprite.missileStartOffsetX = 60;
   sprite.missileStartOffsetY = 34;
+  sprite.facingLeftOffset = 5;
   return sprite;
 }

@@ -7,7 +7,7 @@ import EntityMover from './entity-mover';
 import { AnimationController } from '../game-renderer/animation-controller';
 import { STAT_NAME_HEALTH, STAT_NAME_MANA, STAT_VALUE_MAXIMUM_KEY, updateActorStat } from './common';
 import { ProjectileSpawner } from './projectile-spawner';
-import { AIActionHandler } from './action';
+import { AIActionHandler } from './ai-action-handler';
 
 const TIME_BEFORE_MANA_REGENS = 6000;
 const MANA_REGEN_TICK_TIME = 3000;
@@ -57,6 +57,7 @@ constructor(healerQuestModel, canvas) {
     }
     this.animationController.update4DirectionalMovingAnimation(healer.sprite.currentAnim, healer.facingDirection, isMoving);
     this.entityMover.updateProjectilePositions(this.healerQuestModel.getGameState());
+    this.entityMover.updateDamageZones(this.healerQuestModel.getGameState());
     
     const aiActors = this.healerQuestModel.getGameState().actors.filter(actor => actor.name !== 'healer');
     const allActors = this.healerQuestModel.getGameState().actors;

@@ -73,14 +73,15 @@ export class AIActionHandler {
   }
 }
 
-function BasicAttackAction(actor, target, name, damage, healerQuestModel) {
+function BasicAttackAction(actor, target, name, damage, projectileSpawner) {
   return {
     invoke: function() {
       actor.actionsByName[name].cooldownCounter = 0;
       actor.globalCooldownCounter = 0;
       actor.sprite.setActionAnimationSequence('basic-attack', null, () => {
-        updateActorStat(healerQuestModel, target.name, STAT_NAME_HEALTH, -damage);
+        // updateActorStat(healerQuestModel, target.name, STAT_NAME_HEALTH, -damage);
         actor.currentAction = '';
+        projectileSpawner.spawnDamageZone(actor, actor.sprite.currentAnim, damage);
       });
     }
   }
@@ -149,7 +150,7 @@ class ActionFactory {
 
   getAction(actor, target, actionType, actionName, damage) {
    if (actionType === 'basic-attack') {
-     return BasicAttackAction(actor, target, actionName, damage, this.healerQuestModel);
+     return BasicAttackAction(actor, target, actionName, damage, this.projectileSpawner);
    } else if (actionType === 'basic-projectile') {
      return BasicSpawnProjectileAction(actor, target, actionName, damage, this.projectileSpawner);
    } else if (actionType === 'movement') {

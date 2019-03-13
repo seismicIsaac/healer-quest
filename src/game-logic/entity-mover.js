@@ -75,6 +75,17 @@ class EntityMover {
     });
     gameState.projectiles = gameState.projectiles.filter(projectile => !projectilesToDestroy.includes(projectile));
   }
+
+  updateDamageZones(gameState) {
+    let damageZonesToDestroy = [];
+    gameState.damageZones.forEach((damageZone) => {
+      damageZone.frameCounter++;
+      if (damageZone.frameCounter > damageZone.durationFrames) {
+        damageZonesToDestroy.push(damageZone);
+      }
+    });
+    gameState.damageZones = gameState.projectiles.filter(damageZone => !damageZonesToDestroy.includes(damageZone));
+  }
 }
 
 export default EntityMover;
