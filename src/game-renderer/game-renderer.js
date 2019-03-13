@@ -28,6 +28,10 @@ class GameRenderer {
     projectiles.forEach((projectile) => {
       this.canvas.drawCircle(projectile.x, projectile.y, projectile.radius, 'rgb(200,0,0)');
     });
+    const damageZones = state.damageZones;
+    damageZones.forEach((damageZone) => {
+      this.canvas.drawRect(damageZone.x, damageZone.y, damageZone.width, damageZone.height, 'rgb(200, 50, 50)');
+    })
   }
 
   drawActor(actor) {

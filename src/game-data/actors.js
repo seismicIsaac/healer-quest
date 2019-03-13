@@ -1,5 +1,5 @@
 import { calculateDistance } from "../maths/geometry";
-import { getMovementTarget } from "../game-logic/action";
+import { getMovementTarget } from "../game-logic/ai-action-handler";
 
 export const ACTOR_TYPE_AI = 'AI';
 export const ACTOR_NAME_MONSTER = 'monster';

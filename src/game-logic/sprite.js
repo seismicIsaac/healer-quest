@@ -14,7 +14,7 @@ Sprite.prototype.setCurrentAnimation = function(animationName) {
 }
 
 Sprite.prototype.getDrawParameters = function(facingDirection) {
-  const facingDirectionOffset = facingDirection === 'left' ? 5 : 0;
+  const facingDirectionOffset = facingDirection === 'left' ? this.facingLeftOffset : 0;
   return {
     spriteWidth: this.width,
     spriteHeight: this.height,
@@ -95,4 +95,20 @@ Sprite.prototype.completeAnimationSequence = function() {
   }
   this.animSequence = null;
   this.setCurrentAnimation('idle');
+}
+
+Sprite.prototype.getDamageZone = function() {
+  if (this.currentAnim) {
+
+  }
+}
+
+Sprite.prototype.getBoxOrigin = function(x, width, facingDirection) {
+  if (facingDirection === 'left') {
+
+  }
+  //Assume that normally we face right.
+  //(0,0) offset from there is x + 20
+  //if we're facing the opposite direction, 
+  //then x + 20 is actually width - 20 - width
 }

@@ -16,5 +16,6 @@ export function getGameResult(healerQuestModel) {
 
 export const INITIAL_STATE = {
   actors: [DEFAULT_MONSTER, DEFAULT_FIGHTER, DEFAULT_HEALER],
-  projectiles: []
+  projectiles: [],
+  damageZones: []
 }
